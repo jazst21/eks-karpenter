@@ -81,14 +81,14 @@ kubectl scale --replicas=21 deployment/spread
 kubectl scale --replicas=49 deployment/spread
 kubectl delete -f prov_5.yaml
 ```
-observe carpenter controller terminal, kube-ops-view visualizations. observe how the pods are running in 3 different zones
+observe carpenter controller terminal, kube-ops-view visualizations. observe how the pods are running in 3 different zones. also check on various karpenter scheduling support on https://karpenter.sh/v0.20.0/concepts/scheduling/ , for scheduling method on topologyspread, affinity, taints-tolerations.
 ### Use case 6, manual and exclusive mapping/selectors
 `prov_6`
 ```
 kubectl apply -f prov_6.yaml
 kubectl delete -f prov_6.yaml
 ```
-observe carpenter controller terminal, kube-ops-view visualizations. observe how the mutually exclusive provisioner mapping works
+observe carpenter controller terminal, kube-ops-view visualizations. observe how the mutually exclusive provisioner mapping works. also check on karpenter node label support on https://karpenter.sh/v0.20.0/concepts/scheduling/#supported-labels . 
 ### Use case 7, custom subnet selections
 `prov_7`
 ```
