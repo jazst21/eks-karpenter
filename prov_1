@@ -1,0 +1,31 @@
+--- auto bin pack, small node
+cat <<EOF | kubectl apply -f -
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.small", "t3.medium", "t3.large"]
+    - key: "topology.kubernetes.io/zone" 
+      operator: In
+      values: ["ap-southeast-1a", "ap-southeast-1c", "ap-southeast-1c"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  ttlSecondsAfterEmpty: 3
+  limits:
+    resources:
+      cpu: "1000"
+  labels:
+    billing-team: my-team     
+EOF
+      # values: ["m5.large", "m5.2xlarge"]
+
+
+  consolidation:
+    enabled: true

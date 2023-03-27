@@ -1,0 +1,49 @@
+--- consolidation
+cat <<EOF | kubectl apply -f -
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.small", "t3.medium", "t3.large","t3.2xlarge","m5.large", "m5.2xlarge"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  consolidation:
+    enabled: true
+  limits:
+    resources:
+      cpu: "20"
+  labels:
+    billing-team: my-team     
+EOF
+
+  ttlSecondsAfterEmpty: 3
+
+---
+2022-12-15T06:28:22.676Z        INFO    controller.deprovisioning       deprovisioning via consolidation delete, terminating 1 nodes ip-192-168-27-29.ap-southeast-1.compute.internal/t3.small/on-demand      {"commit": "f60dacd"}
+2022-12-15T06:28:22.732Z        INFO    controller.termination  cordoned node   {"commit": "f60dacd", "node": "ip-192-168-27-29.ap-southeast-1.compute.internal"}
+2022-12-15T06:28:25.468Z        INFO    controller.termination  deleted node    {"commit": "f60dacd", "node": "ip-192-168-27-29.ap-southeast-1.compute.internal"}
+2022-12-15T06:28:55.164Z        INFO    controller.deprovisioning       deprovisioning via consolidation replace, terminating 3 nodes ip-192-168-64-148.ap-southeast-1.compute.internal/t3.small/on-demand, ip-192-168-90-15.ap-southeast-1.compute.internal/t3.small/on-demand, ip-192-168-92-81.ap-southeast-1.compute.internal/t3.medium/on-demand and replacing with spot node from types m5.xlarge, m5dn.xlarge, r5n.xlarge, r5d.xlarge, r4.large and 43 other(s)      {"commit": "f60dacd"}
+2022-12-15T06:28:55.226Z        INFO    controller.deprovisioning       launching node with 1 pods requesting {"cpu":"1125m","memory":"256M","pods":"3"} from types c5ad.large, c5n.large, c5d.large, m5d.large, c6i.large and 43 other(s)    {"commit": "f60dacd", "provisioner": "spot"}
+2022-12-15T06:28:55.509Z        DEBUG   controller.deprovisioning.cloudprovider created launch template {"commit": "f60dacd", "provisioner": "spot", "launch-template-name": "Karpenter-EKS-1-16350956734729304315", "launch-template-id": "lt-01dc5d2e1e633a9ef"}
+2022-12-15T06:28:57.815Z        INFO    controller.deprovisioning.cloudprovider launched new instance   {"commit": "f60dacd", "provisioner": "spot", "launched-instance": "i-04e46b3aa797f1852", "hostname": "ip-192-168-93-49.ap-southeast-1.compute.internal", "type": "c5n.large", "zone": "ap-southeast-1c", "capacity-type": "spot"}
+2022-12-15T06:29:55.138Z        INFO    controller.node added TTL to empty node {"commit": "f60dacd", "node": "ip-192-168-93-49.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:02.010Z        INFO    controller.termination  cordoned node   {"commit": "f60dacd", "node": "ip-192-168-64-148.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:02.089Z        INFO    controller.termination  cordoned node   {"commit": "f60dacd", "node": "ip-192-168-90-15.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:02.117Z        INFO    controller.termination  cordoned node   {"commit": "f60dacd", "node": "ip-192-168-92-81.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:05.094Z        INFO    controller.node removed emptiness TTL from node {"commit": "f60dacd", "node": "ip-192-168-93-49.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:14.877Z        INFO    controller.termination  deleted node    {"commit": "f60dacd", "node": "ip-192-168-92-81.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:24.719Z        INFO    controller.termination  deleted node    {"commit": "f60dacd", "node": "ip-192-168-64-148.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:24.830Z        INFO    controller.termination  deleted node    {"commit": "f60dacd", "node": "ip-192-168-90-15.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:43.355Z        DEBUG   controller.aws  deleted launch template {"commit": "f60dacd"}
+2022-12-15T06:30:52.756Z        INFO    controller.deprovisioning       deprovisioning via consolidation delete, terminating 2 nodes ip-192-168-29-68.ap-southeast-1.compute.internal/t3.medium/on-demand, ip-192-168-188-5.ap-southeast-1.compute.internal/t3.large/on-demand        {"commit": "f60dacd"}
+2022-12-15T06:30:52.806Z        INFO    controller.termination  cordoned node   {"commit": "f60dacd", "node": "ip-192-168-29-68.ap-southeast-1.compute.internal"}
+2022-12-15T06:30:52.835Z        INFO    controller.termination  cordoned node   {"commit": "f60dacd", "node": "ip-192-168-188-5.ap-southeast-1.compute.internal"}
+2022-12-15T06:31:15.156Z        INFO    controller.termination  deleted node    {"commit": "f60dacd", "node": "ip-192-168-29-68.ap-southeast-1.compute.internal"}
+2022-12-15T06:31:25.171Z        INFO    controller.termination  deleted node    {"commit": "f60dacd", "node": "ip-192-168-188-5.ap-southeast-1.compute.internal"}

@@ -1,0 +1,56 @@
+--- auto bin pack, spot node
+cat <<EOF | kubectl apply -f -
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: spot
+spec:
+  requirements:
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values: ["spot"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  ttlSecondsAfterEmpty: 3
+  limits:
+    resources:
+      cpu: "200"
+  labels:
+    billing-team: my-team     
+EOF
+---
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spot
+  template:
+    metadata:
+      labels:
+        app: spot
+    spec:
+      nodeSelector:
+        karpenter.sh/capacity-type: spot
+      containers:
+      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+        name: spot
+        resources:
+          requests:
+            cpu: "1"
+            memory: 256M
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: spot
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+EOF

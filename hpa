@@ -1,0 +1,4 @@
+kubectl autoscale deployment proddetail -n workshop `#The target average CPU utilization` \
+    --cpu-percent=40 \
+    --min=1 `#The lower limit for the number of pods that can be set by the autoscaler` \
+    --max=500 `#The upper limit for the number of pods that can be set by the autoscaler`
