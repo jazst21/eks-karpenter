@@ -21,9 +21,11 @@ spec:
   ttlSecondsAfterEmpty: 3
   limits:
     resources:
-      cpu: "20"
+      cpu: "2000"
   labels:
     billing-team: my-team
+  consolidation:
+    enabled: false
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,7 +46,7 @@ spec:
         name: spread
         resources:
           requests:
-            cpu: "1"
+            cpu: "125m"
             memory: 256M
       tolerations:
       topologySpreadConstraints:

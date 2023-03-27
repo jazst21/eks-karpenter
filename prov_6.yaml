@@ -1,7 +1,7 @@
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
 metadata:
-  name: manual
+  name: default
 spec:
   requirements:
     - key: "node.kubernetes.io/instance-type" 
@@ -9,7 +9,7 @@ spec:
       values: ["t3.2xlarge"]
     - key: eks.amazonaws.com/capacityType
       operator: In
-      values: ["SPOT"]
+      values: ["spot","on-demand"]
   provider:
     subnetSelector:
       alpha.eksctl.io/cluster-name: eksworkshop-eksctl
@@ -18,7 +18,31 @@ spec:
   ttlSecondsAfterEmpty: 3
   limits:
     resources:
-      cpu: "20"
+      cpu: "2000"
+  labels:
+    billing-team: my-team     
+---
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: manual-1
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.2xlarge"]
+    - key: eks.amazonaws.com/capacityType
+      operator: In
+      values: ["spot"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: eksworkshop-eksctl
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: eksworkshop-eksctl
+  ttlSecondsAfterEmpty: 3
+  limits:
+    resources:
+      cpu: "2000"
   labels:
     billing-team: my-team     
 ---
@@ -30,6 +54,30 @@ spec:
   replicas: 3
   selector:
     matchLabels:
+      app: manual-1
+  template:
+    metadata:
+      labels:
+        app: manual-1
+    spec:
+      nodeSelector:
+        karpenter.sh/provisioner-name: manual-1
+      containers:
+      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+        name: manual-1
+        resources:
+          requests:
+            cpu: "125m"
+            memory: 128M
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manual-2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
       app: manual
   template:
     metadata:
@@ -37,18 +85,11 @@ spec:
         app: manual
     spec:
       nodeSelector:
-        karpenter.sh/provisioner-name: manual
+        karpenter.sh/capacity-type: spot
       containers:
       - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
         name: manual
         resources:
           requests:
-            cpu: "1"
-            memory: 256M
-      topologySpreadConstraints:
-      - labelSelector:
-          matchLabels:
-            app: manual
-        maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: ScheduleAnyway
+            cpu: "125m"
+            memory: 128M

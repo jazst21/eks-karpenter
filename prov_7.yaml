@@ -44,12 +44,12 @@ spec:
         name: subnet
         resources:
           requests:
-            cpu: "1"
+            cpu: "125m"
             memory: 256M
-      topologySpreadConstraints:
-      - labelSelector:
-          matchLabels:
-            app: subnet
-        maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: ScheduleAnyway
+      # topologySpreadConstraints:
+      # - labelSelector:
+      #     matchLabels:
+      #       app: subnet
+      #   maxSkew: 1
+      #   topologyKey: topology.kubernetes.io/zone
+      #   whenUnsatisfiable: ScheduleAnyway
