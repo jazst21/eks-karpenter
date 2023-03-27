@@ -1,0 +1,47 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.small", "t3.medium", "t3.large"]
+    - key: "topology.kubernetes.io/zone" 
+      operator: In
+      values: ["ap-southeast-1a", "ap-southeast-1c", "ap-southeast-1c"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  ttlSecondsAfterEmpty: 3
+  limits:
+    resources:
+      cpu: "1000"
+  labels:
+    billing-team: my-team     
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      nodeSelector:
+        billing-team: my-team
+      containers:
+      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+        name: default
+        resources:
+          requests:
+            cpu: "1"
+            memory: 256M

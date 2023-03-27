@@ -17,9 +17,9 @@ eksctl get fargateprofile --cluster eksworkshop-eksctl
 ```
 ## initiate karpenter use cases
 ### Use case 1, default provisioner
---- testing 1, default prov, nap, bipacking, ttl, on-demand, consolidation  </br>
-prov_1
+`prov_0` `prov_1`
 ```
+kubectl apply -f prov_1.yaml
 kubectl logs -f deployment/karpenter -c controller -n karpenter
 *open in new terminal
 kubectl scale --replicas=25 deployment/proddetail -n workshop
@@ -27,6 +27,8 @@ kubectl create namespace web
 kubectl create deployment web --image nginx --replicas 20 -n web
 kubectl scale --replicas=25 deployment/web -n web
 kubectl scale --replicas=50 deployment/web -n web
+kubectl scale --replicas=25 deployment/default
+kubectl delete -f prov_1.yaml
 ```
 observe carpenter controller terminal, kube-ops-view visualizations. how fast karpenter create nodes after pod scaling. and how fast cluster downscale after pod downscale
 ### Use case 2, spot & mixed on demand provisioner
@@ -34,18 +36,26 @@ observe carpenter controller terminal, kube-ops-view visualizations. how fast ka
 ```
 kubectl apply -f prov_2.yaml
 kubectl scale --replicas=25 deployment/spot -n default
+kubectl delete -f prov_2.yaml
 ```
 observe carpenter controller terminal, kube-ops-view visualizations
 ### Use case 3, cluster consolidation
 `prov_3`
 ```
 kubectl apply -f prov_3.yaml
+kubectl create deployment web --image nginx --replicas 20 
+kubectl scale --replicas=50 deployment/web
+kubectl scale --replicas=100 deployment/web
+kubectl delete deployment web
+kubectl delete -f prov_3.yaml
 ```
 observe carpenter controller terminal, kube-ops-view visualizations. observe how the cluster is being consolidated trough bin-pack feature
 ### Use case 4, arm, multi-exclusive provisioner
 `prov_4`
 ```
 kubectl apply -f prov_4.yaml
+
+kubectl delete -f prov_4.yaml
 ```
 observe carpenter controller terminal, kube-ops-view visualizations. observe how the cluster create new arm nodes, with 2 multi exclusive provisioner running
 ### Use case 5, topology spread
