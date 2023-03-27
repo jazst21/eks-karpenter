@@ -1,7 +1,7 @@
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
 metadata:
-  name: default
+  name: default_1
 spec:
   requirements:
     - key: "node.kubernetes.io/instance-type" 
@@ -36,8 +36,8 @@ spec:
       labels:
         app: default
     spec:
-      nodeSelector:
-        billing-team: my-team
+      # nodeSelector:
+      #   billing-team: my-team
       containers:
       - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
         name: default

@@ -1,7 +1,7 @@
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
 metadata:
-  name: default
+  name: default_0
 spec:
   # References cloud provider-specific custom resource, see your cloud provider specific documentation
   providerRef:
@@ -36,7 +36,7 @@ spec:
 apiVersion: karpenter.k8s.aws/v1alpha1
 kind: AWSNodeTemplate
 metadata:
-  name: default
+  name: default_0
 spec:
   subnetSelector:
     alpha.eksctl.io/cluster-name: eksworkshop-eksctl
