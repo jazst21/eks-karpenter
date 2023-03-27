@@ -1,0 +1,54 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: subnet
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.2xlarge"]
+    - key: eks.amazonaws.com/capacityType
+      operator: In
+      values: ["SPOT"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  ttlSecondsAfterEmpty: 3
+  limits:
+    resources:
+      cpu: "2000"
+  labels:
+    billing-team: my-team
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subnet
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: subnet
+  template:
+    metadata:
+      labels:
+        app: subnet
+    spec:
+      nodeSelector:
+        karpenter.sh/provisioner-name: subnet
+      containers:
+      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+        name: subnet
+        resources:
+          requests:
+            cpu: "1"
+            memory: 256M
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: subnet
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway

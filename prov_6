@@ -1,33 +1,60 @@
+manual mapping proviser, gpu
 --- 
 cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spread
+  name: manual
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: spread
+      app: manual
   template:
     metadata:
       labels:
-        app: spread
+        app: manual
     spec:
+      nodeSelector:
+        karpenter.sh/provisioner-name: manual
       containers:
       - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
-        name: spread
+        name: manual
         resources:
           requests:
             cpu: "1"
             memory: 256M
-      tolerations:
       topologySpreadConstraints:
       - labelSelector:
           matchLabels:
-            app: spread
+            app: manual
         maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
         whenUnsatisfiable: ScheduleAnyway
 EOF
 ---
+cat <<EOF | kubectl apply -f -
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: manual
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.2xlarge"]
+    - key: eks.amazonaws.com/capacityType
+      operator: In
+      values: ["SPOT"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  ttlSecondsAfterEmpty: 3
+  limits:
+    resources:
+      cpu: "20"
+  labels:
+    billing-team: my-team     
+EOF

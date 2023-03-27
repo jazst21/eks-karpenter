@@ -1,5 +1,3 @@
---- amd64
-cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,9 +22,7 @@ spec:
           requests:
             cpu: "1"
             memory: 256M
-EOF
 ---
-cat <<EOF | kubectl apply -f -
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
 metadata:
@@ -50,7 +46,3 @@ spec:
       cpu: "20"
   labels:
     billing-team: my-team     
-EOF
-
----
-        # intent: apps

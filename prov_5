@@ -1,56 +1,33 @@
---- amd64
+--- 
 cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: arm64
+  name: spread
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: arm64
+      app: spread
   template:
     metadata:
       labels:
-        app: arm64
+        app: spread
     spec:
-      nodeSelector:
-        kubernetes.io/arch: arm64
-        karpenter.sh/capacity-type: on-demand
       containers:
       - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
-        name: arm64
+        name: spread
         resources:
           requests:
             cpu: "1"
             memory: 256M
+      tolerations:
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: spread
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
 EOF
 ---
-cat <<EOF | kubectl apply -f -
-apiVersion: karpenter.sh/v1alpha5
-kind: Provisioner
-metadata:
-  name: arm64
-spec:
-  requirements:
-    - key: "kubernetes.io/arch" 
-      operator: In
-      values: ["arm64"]
-    - key: karpenter.sh/capacity-type
-      operator: In
-      values: ["on-demand"]
-  provider:
-    subnetSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
-    securityGroupSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
-  ttlSecondsAfterEmpty: 3
-  limits:
-    resources:
-      cpu: "20"
-  labels:
-    billing-team: my-team     
-EOF
-
----
-        # intent: apps
