@@ -1,12 +1,15 @@
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
 metadata:
-  name: default_3
+  name: default-3
 spec:
   requirements:
     - key: "node.kubernetes.io/instance-type" 
       operator: In
       values: ["t3.small", "t3.medium", "t3.large","t3.2xlarge","m5.large", "m5.2xlarge"]
+    - key: "topology.kubernetes.io/zone" 
+      operator: In
+      values: ["us-east-1a", "us-east-1c", "us-east-1c"]
   provider:
     subnetSelector:
       alpha.eksctl.io/cluster-name: eksworkshop-eksctl
