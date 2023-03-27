@@ -1,0 +1,21 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.small", "t3.medium", "t3.large","t3.2xlarge","m5.large", "m5.2xlarge"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  consolidation:
+    enabled: true
+  limits:
+    resources:
+      cpu: "2000"
+  labels:
+    billing-team: my-team   

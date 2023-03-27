@@ -10,7 +10,7 @@ eks-node-viewer
 kubectl logs -f deployment/karpenter -c controller -n karpenter
 ---
 eksctl create fargateprofile -f fargate.yaml
-
+eksctl get fargateprofile --cluster eksworkshop-eksctl
 ---
 curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.4/docs/install/iam_policy.json
 aws iam create-policy \
