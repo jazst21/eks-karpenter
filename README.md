@@ -40,7 +40,7 @@ kubectl scale --replicas=25 deployment/web -n web
 kubectl scale --replicas=50 deployment/web -n web
 kubectl delete -f prov_1.yaml
 ```
-observe carpenter controller terminal, kube-ops-view visualizations. how fast karpenter create nodes after pod scaling. and how fast cluster downscale after pod downscale
+observe carpenter controller terminal, kube-ops-view visualizations. how fast karpenter create nodes after pod scaling. and how fast cluster downscale after pod downscale. try to change/add parameters from reference: https://karpenter.sh/v0.20.0/concepts/provisioning/
 ### Use case 2, spot & mixed on demand provisioner
 `prov_2`
 ```
