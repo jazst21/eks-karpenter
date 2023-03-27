@@ -67,10 +67,11 @@ observe carpenter controller terminal, kube-ops-view visualizations. observe how
 `prov_4`
 ```
 kubectl apply -f prov_4.yaml
-
+kubectl scale --replicas=50 deployment/arm64
+kubectl scale --replicas=4 deployment/arm64
 kubectl delete -f prov_4.yaml
 ```
-observe carpenter controller terminal, kube-ops-view visualizations. observe how the cluster create new arm nodes, with 2 multi exclusive provisioner running
+observe carpenter controller terminal, kube-ops-view visualizations. observe how the cluster create new arm nodes, with 2 multi exclusive provisioner running. see how without consolidation, existing nodes are intact.
 ### Use case 5, topology spread
 `prov_5`
 ```
