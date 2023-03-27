@@ -1,0 +1,71 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default
+spec:
+  # References cloud provider-specific custom resource, see your cloud provider specific documentation
+  providerRef:
+    name: default
+  ttlSecondsAfterEmpty: 30
+
+  # Labels are arbitrary key-values that are applied to all nodes
+  labels:
+    eks-immersion-team: my-team
+
+  # Requirements that constrain the parameters of provisioned nodes.
+  # These requirements are combined with pod.spec.affinity.nodeAffinity rules.
+  # Operators { In, NotIn } are supported to enable including or excluding values
+  requirements:
+    - key: "karpenter.k8s.aws/instance-category"
+      operator: In
+      values: ["c", "m"]
+    - key: "kubernetes.io/arch"
+      operator: In
+      values: ["amd64"]
+    - key: "karpenter.sh/capacity-type" # If not included, the webhook for the AWS cloud provider will default to on-demand
+      operator: In
+      values: ["on-demand"]
+  limits:
+    resources:
+      cpu: "5000"    
+  # Enables consolidation which attempts to reduce cluster cost by both removing un-needed nodes and down-sizing those
+  # that can't be removed.  Mutually exclusive with the ttlSecondsAfterEmpty parameter.
+  consolidation:
+    enabled: false
+---
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: default
+spec:
+  subnetSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+  securityGroupSelector:
+      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME} 
+  tags:
+    managed-by: "karpenter"
+    intent: "apps"         
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      nodeSelector:
+        billing-team: my-team
+      containers:
+      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+        name: default
+        resources:
+          requests:
+            cpu: "1"
+            memory: 256M

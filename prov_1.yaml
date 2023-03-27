@@ -9,7 +9,7 @@ spec:
       values: ["t3.small", "t3.medium", "t3.large"]
     - key: "topology.kubernetes.io/zone" 
       operator: In
-      values: ["ap-southeast-1a", "ap-southeast-1c", "ap-southeast-1c"]
+      values: ["us-east-1a", "us-east-1c", "us-east-1c"]
   provider:
     subnetSelector:
       alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
