@@ -61,7 +61,7 @@ spec:
         app: default
     spec:
       nodeSelector:
-        billing-team: my-team
+        eks-immersion-team: my-team
       containers:
       - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
         name: default

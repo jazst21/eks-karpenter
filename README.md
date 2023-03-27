@@ -9,6 +9,7 @@ helm install kube-ops-view --namespace kube-ops-view \
 christianknell/kube-ops-view \
 --set service.type=LoadBalancer \
 --set rbac.create=True
+kubectl get all -n kube-ops-view
 ```
 ## initiate karpenter use cases
 ### Use case 1, default provisioner
