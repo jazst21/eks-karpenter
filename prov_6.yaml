@@ -1,3 +1,27 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: manual
+spec:
+  requirements:
+    - key: "node.kubernetes.io/instance-type" 
+      operator: In
+      values: ["t3.2xlarge"]
+    - key: eks.amazonaws.com/capacityType
+      operator: In
+      values: ["SPOT"]
+  provider:
+    subnetSelector:
+      alpha.eksctl.io/cluster-name: eksworkshop-eksctl
+    securityGroupSelector:
+      alpha.eksctl.io/cluster-name: eksworkshop-eksctl
+  ttlSecondsAfterEmpty: 3
+  limits:
+    resources:
+      cpu: "20"
+  labels:
+    billing-team: my-team     
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,27 +52,3 @@ spec:
         maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
         whenUnsatisfiable: ScheduleAnyway
----
-apiVersion: karpenter.sh/v1alpha5
-kind: Provisioner
-metadata:
-  name: manual
-spec:
-  requirements:
-    - key: "node.kubernetes.io/instance-type" 
-      operator: In
-      values: ["t3.2xlarge"]
-    - key: eks.amazonaws.com/capacityType
-      operator: In
-      values: ["SPOT"]
-  provider:
-    subnetSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
-    securityGroupSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
-  ttlSecondsAfterEmpty: 3
-  limits:
-    resources:
-      cpu: "20"
-  labels:
-    billing-team: my-team     

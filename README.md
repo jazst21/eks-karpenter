@@ -15,6 +15,7 @@ kubectl get all -n kube-ops-view
 ### Use case 1, default provisioner
 `prov_0` & `prov_1` as example
 ```
+export CLUSTER_NAME=eksworkshop-eksctl
 kubectl logs -f deployment/karpenter -c controller -n karpenter
 *open in new terminal
 kubectl apply -f prov_0.yaml

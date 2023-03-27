@@ -39,9 +39,9 @@ metadata:
   name: default
 spec:
   subnetSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+    alpha.eksctl.io/cluster-name: eksworkshop-eksctl
   securityGroupSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME} 
+    alpha.eksctl.io/cluster-name: eksworkshop-eksctl
   tags:
     managed-by: "karpenter"
     intent: "apps"         
@@ -60,8 +60,6 @@ spec:
       labels:
         app: default
     spec:
-      nodeSelector:
-        eks-immersion-team: my-team
       containers:
       - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
         name: default

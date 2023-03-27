@@ -9,9 +9,9 @@ spec:
       values: ["t3.small", "t3.medium", "t3.large","t3.2xlarge","m5.large", "m5.2xlarge"]
   provider:
     subnetSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+      alpha.eksctl.io/cluster-name: eksworkshop-eksctl
     securityGroupSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+      alpha.eksctl.io/cluster-name: eksworkshop-eksctl
   consolidation:
     enabled: true
   limits:

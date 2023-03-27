@@ -12,9 +12,10 @@ spec:
       values: ["SPOT"]
   provider:
     subnetSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+      # alpha.eksctl.io/cluster-name: eksworkshop-eksctl
+      Name: subnet-0325cd5e53e32bf0b
     securityGroupSelector:
-      alpha.eksctl.io/cluster-name: ${CLUSTER_NAME}
+      alpha.eksctl.io/cluster-name: eksworkshop-eksctl
   ttlSecondsAfterEmpty: 3
   limits:
     resources:
