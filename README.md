@@ -1,6 +1,9 @@
 ## Start
-follow initial setup on https://catalog.workshops.aws/eks-immersionday/en-US/autoscaling/karpenter
+follow initial setup on https://catalog.workshops.aws/eks-immersionday/en-US/autoscaling/karpenter </br>
+add new linked-role for eks 1.24
+```
 aws iam create-service-linked-role --aws-service-name spot.amazonaws.com
+```
 ## install kube-ops-view
 ```
 helm repo add christianknell https://christianknell.github.io/helm-charts
