@@ -1,7 +1,7 @@
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
 metadata:
-  name: default
+  name: default_3
 spec:
   requirements:
     - key: "node.kubernetes.io/instance-type" 
@@ -18,4 +18,33 @@ spec:
     resources:
       cpu: "2000"
   labels:
-    billing-team: my-team   
+    billing-team: my-team
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consolidation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consolidation
+  template:
+    metadata:
+      labels:
+        app: consolidation
+    spec:
+      containers:
+      - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+        name: consolidation
+        resources:
+          requests:
+            cpu: "1"
+            memory: 256M
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: consolidation
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway

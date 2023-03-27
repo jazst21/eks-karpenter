@@ -18,6 +18,8 @@ spec:
       cpu: "200"
   labels:
     billing-team: my-team     
+  consolidation:
+    enabled: false
 ---
 apiVersion: apps/v1
 kind: Deployment

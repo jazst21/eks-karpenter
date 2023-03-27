@@ -60,7 +60,7 @@ kubectl scale --replicas=100 deployment/web
 kubectl delete deployment web
 kubectl delete -f prov_3.yaml
 ```
-observe carpenter controller terminal, kube-ops-view visualizations. observe how the cluster is being consolidated trough bin-pack feature
+observe carpenter controller terminal, kube-ops-view visualizations. observe how the cluster is being consolidated trough bin-pack feature. read more how karpenter deprovision node with different scenario, refer to https://karpenter.sh/v0.20.0/concepts/deprovisioning/ .
 ### Use case 4, arm, multi-exclusive provisioner
 `prov_4`
 ```
