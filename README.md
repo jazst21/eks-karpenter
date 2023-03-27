@@ -1,11 +1,6 @@
 ## Start
 follow initial setup on https://catalog.workshops.aws/eks-immersionday/en-US/autoscaling/karpenter
-## optional: migrate crd and important cluster component into fargate
-```
-eksctl create fargateprofile -f fargate.yaml
-eksctl get fargateprofile --cluster eksworkshop-eksctl
-```
-## install kube-ops-view with aws load balancer controller (NLB)
+## install kube-ops-view
 ```
 helm repo add christianknell https://christianknell.github.io/helm-charts
 helm repo update
@@ -14,47 +9,6 @@ helm install kube-ops-view --namespace kube-ops-view \
 christianknell/kube-ops-view \
 --set service.type=LoadBalancer \
 --set rbac.create=True
-curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.4/docs/install/iam_policy.json
-aws iam create-policy \
-   --policy-name AWSLoadBalancerControllerIAMPolicy \
-   --policy-document file://iam_policy.json
-eksctl create iamserviceaccount \
-  --cluster=eksworkshop-eksctl \
-  --namespace=kube-system \
-  --name=aws-load-balancer-controller \
-  --attach-policy-arn=arn:aws:iam::563418766479:policy/AWSLoadBalancerControllerIAMPolicy \
-  --override-existing-serviceaccounts \
-  --approve
-eksctl get iamserviceaccount --cluster eksworkshop-eksctl --name aws-load-balancer-controller --namespace kube-system
-helm repo add eks https://aws.github.io/eks-charts
-kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
-    --set clusterName=eksworkshop-eksctl \
-    --set serviceAccount.create=false \
-    --set region=us-east-1 \
-    --set vpcId=$(aws ec2 describe-vpcs | jq -r '.Vpcs[0]|.VpcId') \
-    --set serviceAccount.name=aws-load-balancer-controller \
-    -n kube-system
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Service
-metadata:
-  name: kube-ops-view
-  namespace: kube-ops-view
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: external
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-spec:
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
-  type: LoadBalancer
-  selector:
-    app.kubernetes.io/instance: kube-ops-view
-    app.kubernetes.io/name: kube-ops-view
-EOF
 ```
 ## initiate karpenter use cases
 ### Use case 1, default provisioner
