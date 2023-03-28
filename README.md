@@ -27,6 +27,8 @@ kubectl scale --replicas=25 deployment/default
 kubectl scale --replicas=50 deployment/default
 kubectl scale --replicas=1 deployment/default
 kubectl delete -f prov_0.yaml
+kubectl apply -f prov_1.yaml
+kubectl delete -f prov_1.yaml
 ```
 ```
 kubectl logs -f deployment/karpenter -c controller -n karpenter
