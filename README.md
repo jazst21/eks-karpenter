@@ -52,7 +52,7 @@ kubectl apply -f prov_2.yaml
 kubectl scale --replicas=25 deployment/spot -n default
 kubectl delete -f prov_2.yaml
 ```
-observe carpenter controller terminal, kube-ops-view visualizations
+observe carpenter controller terminal, kube-ops-view visualizations. additional way to exclude node consolidations https://karpenter.sh/v0.27.0/concepts/deprovisioning/#node-consolidation
 ### Use case 3, cluster consolidation
 `prov_3`
 ```
@@ -93,6 +93,8 @@ observe carpenter controller terminal, kube-ops-view visualizations. observe how
 `prov_7`
 ```
 kubectl apply -f prov_7.yaml
+kubectl describe node ip-192-168-102-154.ec2.internal
+kubectl delete -f prov_7.yaml
 ```
 observe carpenter controller terminal, kube-ops-view visualizations. observe how karpenter schedule pod on specific subnet. useful for cluster that run diff subnet on databases or non-prod workload or semi regulated workload
 

@@ -6,14 +6,14 @@ spec:
   requirements:
     - key: "node.kubernetes.io/instance-type" 
       operator: In
-      values: ["t3.2xlarge"]
+      values: ["t3.xlarge"]
     - key: eks.amazonaws.com/capacityType
       operator: In
       values: ["SPOT"]
   provider:
     subnetSelector:
       # alpha.eksctl.io/cluster-name: eksworkshop-eksctl
-      Name: subnet-0325cd5e53e32bf0b
+      Name: eksctl-eksworkshop-PrivateSubnet1
     securityGroupSelector:
       alpha.eksctl.io/cluster-name: eksworkshop-eksctl
   ttlSecondsAfterEmpty: 3
