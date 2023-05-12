@@ -6,7 +6,10 @@ spec:
   requirements:
     - key: karpenter.sh/capacity-type
       operator: In
-      values: ["spot"]
+      values: ["on-demand","spot"]
+    # - key: eks.amazonaws.com/capacityType
+    #   operator: In
+    #   values: ["ON_DEMAND","SPOT"]
   provider:
     subnetSelector:
       alpha.eksctl.io/cluster-name: eksworkshop-eksctl
@@ -15,7 +18,7 @@ spec:
   ttlSecondsAfterEmpty: 3
   limits:
     resources:
-      cpu: "200"
+      cpu: "2000"
   labels:
     billing-team: my-team     
   consolidation:
@@ -26,7 +29,7 @@ kind: Deployment
 metadata:
   name: spot
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       app: spot
@@ -35,19 +38,20 @@ spec:
       labels:
         app: spot
     spec:
-      nodeSelector:
-        karpenter.sh/capacity-type: spot
+      # nodeSelector:
+      #   karpenter.sh/capacity-type: spot
       containers:
       - image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
         name: spot
         resources:
           requests:
-            cpu: "1"
-            memory: 256M
+            cpu: "0.25"
+            memory: 128M
       topologySpreadConstraints:
       - labelSelector:
           matchLabels:
             app: spot
         maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
+        topologyKey: karpenter.sh/capacity-type
+        # topologyKey: eks.amazonaws.com/capacityType
         whenUnsatisfiable: ScheduleAnyway

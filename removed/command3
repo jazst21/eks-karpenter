@@ -1,0 +1,26 @@
+aws eks --region ap-southeast-1 update-kubeconfig --name eks01
+--
+export KARPENTER_VERSION=v0.26.1
+echo "export KARPENTER_VERSION=${KARPENTER_VERSION}" >> ~/.bash_profile
+TEMPOUT=$(mktemp)
+curl -fsSL https://karpenter.sh/"${KARPENTER_VERSION}"/getting-started/getting-started-with-eksctl/cloudformation.yaml > $TEMPOUT \
+&& aws cloudformation deploy \
+  --stack-name Karpenter-${CLUSTER_NAME} \
+  --template-file ${TEMPOUT} \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides ClusterName=${CLUSTER_NAME}
+eksctl create iamidentitymapping \
+  --username system:node:{{EC2PrivateDNSName}} \
+  --cluster  ${CLUSTER_NAME} \
+  --arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/KarpenterNodeRole-${CLUSTER_NAME} \
+  --group system:bootstrappers \
+  --group system:nodes
+kubectl describe configmap -n kube-system aws-auth
+eksctl utils associate-iam-oidc-provider --cluster ${CLUSTER_NAME} --approve
+eksctl create iamserviceaccount \
+  --cluster $CLUSTER_NAME --name karpenter --namespace karpenter \
+  --role-name "${CLUSTER_NAME}-karpenter" \
+  --attach-policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/KarpenterControllerPolicy-$CLUSTER_NAME \
+  --role-only \
+  --approve
+aws iam create-service-linked-role --aws-service-name spot.amazonaws.com
